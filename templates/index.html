@@ -22,7 +22,7 @@
         {% if messages %}
             {% for category, message in messages %}
                 <div class="alert {{ category }}">{{ message }}</div>
-            {% endfor %}
+            {% endfor %}  <!-- ← Вот он, пропущенный endfor! -->
         {% endif %}
     {% endwith %}
 
@@ -49,3 +49,14 @@
     <h2>📅 История</h2>
     {% if records %}
         {% for record in records %}
+            <div class="record">
+                <strong>{{ record.date.strftime('%Y-%m-%d %H:%M') }}</strong><br>
+                🔴 {{ record.systolic }} / {{ record.diastolic }} (💓 {{ record.pulse }})<br>
+                {% if record.comment %}📝 {{ record.comment }}{% endif %}
+            </div>
+        {% endfor %}  <!-- ← И здесь endfor -->
+    {% else %}
+        <p>Нет записей. Добавьте первое измерение!</p>
+    {% endif %}
+</body>
+</html>
