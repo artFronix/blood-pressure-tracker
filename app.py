@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import os
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blood_pressure.db'
+app = Flask(__name__, static_folder='static')
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///blood_pressure.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 class BloodPressure(db.Model):
@@ -25,57 +27,59 @@ class BloodPressure(db.Model):
             'comment': self.comment
         }
 
-with app.app_context():
+# Создаем таблицы при первом запросе
+@app.before_first_request
+def create_tables():
     db.create_all()
 
-@app.route('/static/<path:path>')
-def send_static(path):
-    return send_from_directory('static', path)
-
+@app.route("/")
 def index():
-    if request.method == "POST":
-        try:
-            systolic = int(request.form["systolic"])
-            diastolic = int(request.form["diastolic"])
-            pulse = int(request.form.get("pulse", 0))
-            comment = request.form.get("comment", "")
+    """Главная страница с формой и графиками"""
+    records = BloodPressure.query.order_by(BloodPressure.date.asc()).all()
+    records_json = [record.to_dict() for record in records]
+    return render_template(
+        'index.html',
+        records=records[-10:],  # Последние 10 записей для таблицы
+        records_json=records_json  # Все записи для графиков
+    )
 
-            if systolic <= 0 or diastolic <= 0:
-                flash("❌ Давление должно быть положительным числом!", "error")
-                return redirect(url_for("index"))
+@app.route("/add", methods=["POST"])
+def add_measurement():
+    """Обработка добавления нового измерения"""
+    try:
+        systolic = int(request.form["systolic"])
+        diastolic = int(request.form["diastolic"])
+        pulse = int(request.form.get("pulse", 0))
+        comment = request.form.get("comment", "")
 
-            # Анализ давления
-            status = analyze_pressure(systolic, diastolic)
-            if status != "normal":
-                flash(f"⚠️ {status}", "warning")
+        if systolic <= 0 or diastolic <= 0:
+            flash("❌ Давление должно быть положительным числом!", "error")
+            return redirect(url_for("index"))
 
-            # Сохраняем новое измерение
-            new_record = BloodPressure(
-                systolic=systolic,
-                diastolic=diastolic,
-                pulse=pulse,
-                comment=comment
-            )
-            db.session.add(new_record)
-            db.session.commit()
+        new_record = BloodPressure(
+            systolic=systolic,
+            diastolic=diastolic,
+            pulse=pulse,
+            comment=comment
+        )
+        db.session.add(new_record)
+        db.session.commit()
+        
+        status = analyze_pressure(systolic, diastolic)
+        if status != "normal":
+            flash(f"⚠️ {status}", "warning")
+        else:
             flash("✅ Измерение сохранено!", "success")
 
-        except ValueError:
-            flash("❌ Введите корректные числа!", "error")
-
-        return redirect(url_for("index"))
-
-    # Получаем все записи в хронологическом порядке для графиков
-    records = BloodPressure.query.order_by(BloodPressure.date.asc()).all()
+    except ValueError:
+        flash("❌ Введите корректные числа!", "error")
     
-    # Конвертируем записи в словари для JSON
-    records_json = [record.to_dict() for record in records]
-    
-    return render_template(
-        "index.html",
-        records=records,  # для таблицы
-        records_json=records_json  # для графиков
-    )
+    return redirect(url_for("index"))
+
+@app.route('/static/<path:path>')
+def serve_static(path):
+    """Обработка статических файлов"""
+    return send_from_directory('static', path)
 
 def analyze_pressure(systolic, diastolic):
     """Анализ показателей давления"""
@@ -85,8 +89,8 @@ def analyze_pressure(systolic, diastolic):
         return "Гипертензия (высокое давление)"
     elif systolic >= 120 or diastolic >= 80:
         return "Прегипертензия (повышенное)"
-    else:
-        return "normal"
+    return "normal"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
