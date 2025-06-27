@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
 
 # Настройка БД
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://') or 'sqlite:///blood_pressure.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://') or 'postgresql://blood_pressure_db_4cno_user:dnKUaJW7roWQ88Ghf0orCcxe3n3pAw4a@dpg-d1f5b2umcj7s739ds5o0-a/blood_pressure_db_4cno'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
