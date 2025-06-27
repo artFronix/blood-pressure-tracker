@@ -126,13 +126,41 @@
   }
   
   /* Адаптивность */
-  @media (max-width: 768px) {
-    .form-grid {
-      grid-template-columns: 1fr;
+  /* Оптимизация для маленьких экранов */
+  @media (max-width: 480px) {
+    body {
+      font-size: 15px;
     }
-    
-    .record-card {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
+
+    .card {
+      border-radius: 0;
+      margin-bottom: 0.8rem;
+      box-shadow: none;
+      border-bottom: 1px solid #eee;
+    }
+
+    .btn {
+      padding: 0.7rem;
+    }
+
+    .record-value {
+      font-size: 1rem;
     }
   }
+}
+
+/* Темная тема (опционально) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #f0f0f0;
+    --text-light: #aaa;
+    --bg: #121212;
+    --card-bg: #1e1e1e;
+  }
+
+  .form-control {
+    background: #2d2d2d;
+    border-color: #444;
+    color: white;
+  }
+}
