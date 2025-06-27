@@ -9,6 +9,7 @@
     --success: #51cf66;
   }
   
+  /* Базовые стили */
   body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--bg);
@@ -16,6 +17,7 @@
     line-height: 1.6;
     padding: 0;
     margin: 0;
+    font-size: 16px;
   }
   
   .container {
@@ -24,50 +26,64 @@
     padding: 1rem;
   }
   
+  /* Шапка */
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
   }
   
   .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary);
+    margin-bottom: 0.5rem;
   }
   
+  .date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+  }
+  
+  /* Карточки */
   .card {
     background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 2rem;
-    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
   }
   
+  .card h2 {
+    margin-top: 0;
+    color: var(--primary);
+    font-size: 1.3rem;
+  }
+  
+  /* Форма */
   .form-grid {
-    display: flex;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2.5rem;
-    margin-bottom: 2rem;
-    }
-    .form-grid .commentContainer {
-        display: block;
-    }
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
   
   .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--text-light);
+    font-size: 0.9rem;
   }
   
   .form-control {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.7rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: border 0.2s;
   }
   
@@ -80,87 +96,146 @@
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.8rem 1.5rem;
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.2s;
+    width: 100%;
   }
   
   .btn:hover {
     background: #1a8ae6;
   }
   
+  /* Список записей */
   .records-list {
     display: grid;
     gap: 1rem;
   }
   
   .record-card {
-    padding: 1.5rem;
+    padding: 1.2rem;
     border-left: 4px solid var(--primary);
     background: var(--card-bg);
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
   }
   
   .record-value {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
+    color: var(--text);
   }
   
   .record-label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-light);
     margin-bottom: 0.25rem;
   }
-  .chartsWrapper {
-    display: flex;
-  }
+  
+  /* Графики */
   .chart-container {
-    height: 300px;
-    margin-top: 2rem;
+    height: 250px;
+    margin-top: 1.5rem;
+    position: relative;
   }
   
-  /* Адаптивность */
-  /* Оптимизация для маленьких экранов */
-  @media (max-width: 480px) {
-    body {
-      font-size: 15px;
+  /* Сообщения */
+  .alert {
+    padding: 0.8rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .alert.success {
+    background-color: rgba(81, 207, 102, 0.1);
+    color: var(--success);
+  }
+  
+  .alert.error {
+    background-color: rgba(255, 107, 107, 0.1);
+    color: var(--danger);
+  }
+  
+  /* Мобильная адаптация */
+  @media (max-width: 768px) {
+    .container {
+      padding: 0.8rem;
     }
-
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
     .card {
-      border-radius: 0;
-      margin-bottom: 0.8rem;
-      box-shadow: none;
-      border-bottom: 1px solid #eee;
+      padding: 1rem;
     }
-
-    .btn {
-      padding: 0.7rem;
+  
+    .form-grid {
+      grid-template-columns: 1fr;
     }
-
-    .record-value {
-      font-size: 1rem;
+  
+    .record-card {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+  
+    .chart-container {
+      height: 200px;
+    }
+  
+    /* Оптимизация для маленьких экранов */
+    @media (max-width: 480px) {
+      body {
+        font-size: 15px;
+      }
+  
+      .card {
+        border-radius: 0;
+        margin-bottom: 0.8rem;
+        box-shadow: none;
+        border-bottom: 1px solid #eee;
+      }
+  
+      .btn {
+        padding: 0.7rem;
+      }
+  
+      .record-value {
+        font-size: 1rem;
+      }
     }
   }
-}
-
-/* Темная тема (опционально) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #f0f0f0;
-    --text-light: #aaa;
-    --bg: #121212;
-    --card-bg: #1e1e1e;
+  
+  /* Темная тема (опционально) */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text: #f0f0f0;
+      --text-light: #aaa;
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+    }
+  
+    .form-control {
+      background: #2d2d2d;
+      border-color: #444;
+      color: white;
+    }
   }
-
-  .form-control {
-    background: #2d2d2d;
-    border-color: #444;
-    color: white;
-  }
-}
+  .form-grid {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 2rem;
+    }
+    .form-grid .commentContainer {
+        display: block;
+    }
+  
+ 
