@@ -28,7 +28,6 @@ class BloodPressure(db.Model):
             'comment': self.comment
         }
 
-# Инициализация БД
 with app.app_context():
     db.create_all()
 
@@ -36,13 +35,15 @@ with app.app_context():
 def index():
     """Главная страница с формой и списком измерений"""
     try:
-        # Всегда получаем записи, даже для POST-запросов
+        # Получаем текущую дату для шаблона
+        current_time = datetime.now()
+        
+        # Всегда получаем записи
         records = BloodPressure.query.order_by(BloodPressure.date.desc()).limit(10).all()
         
         if request.method == "POST":
             try:
                 # Обработка данных формы
-                now = datetime.now()
                 systolic = int(request.form["systolic"])
                 diastolic = int(request.form["diastolic"])
                 pulse = int(request.form.get("pulse", 0))
@@ -62,17 +63,21 @@ def index():
                 db.session.commit()
                 flash("✅ Измерение сохранено!", "success")
                 
-                # Обновляем записи после добавления нового измерения
+                # Обновляем записи после добавления
                 records = BloodPressure.query.order_by(BloodPressure.date.desc()).limit(10).all()
 
             except ValueError:
                 flash("❌ Введите корректные числа!", "error")
 
-        return render_template('index.html', records=records, now=now)
+        return render_template('index.html', 
+                            records=records,
+                            now=current_time)  # Передаем текущее время в шаблон
     
     except Exception as e:
         flash(f"⚠️ Произошла ошибка: {str(e)}", "error")
-        return render_template('index.html', records=[])
+        return render_template('index.html', 
+                            records=[],
+                            now=datetime.now())
 
 @app.route('/get_records')
 def get_records():
