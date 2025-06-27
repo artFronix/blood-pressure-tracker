@@ -4,18 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Журнал давления</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        input, textarea { width: 100%; padding: 8px; margin-top: 5px; }
-        button { background: #4CAF50; color: white; border: none; padding: 10px 15px; cursor: pointer; }
-        .record { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
-        .alert { padding: 10px; margin-bottom: 15px; border-radius: 4px; }
-        .success { background: #dff0d8; color: #3c763d; }
-        .error { background: #f2dede; color: #a94442; }
-    </style>
+    <link rel="stylesheet" href="/static/css/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/pressure_chart.js"></script>
+
 </head>
 <body>
     <h1>📊 Журнал давления</h1>
@@ -60,5 +51,7 @@
     {% else %}
         <p>Нет записей. Добавьте первое измерение!</p>
     {% endif %}
+
+    <script src="/static/js/pressure_chart.js"></script>
 </body>
 </html>
