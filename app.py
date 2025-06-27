@@ -11,14 +11,13 @@ db = SQLAlchemy(app)
 
 class BloodPressure(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    systolic = db.Column(db.Integer, nullable=False)  # верхнее
-    diastolic = db.Column(db.Integer, nullable=False)  # нижнее
-    pulse = db.Column(db.Integer)  # пульс
-    comment = db.Column(db.String(200))  # комментарий
-    date = db.Column(db.DateTime, default=datetime.now)  # дата и время
+    systolic = db.Column(db.Integer, nullable=False)
+    diastolic = db.Column(db.Integer, nullable=False)
+    pulse = db.Column(db.Integer)
+    comment = db.Column(db.String(200))
+    date = db.Column(db.DateTime, default=datetime.now)
 
     def to_dict(self):
-        """Конвертация записи в словарь для JSON"""
         return {
             'date': self.date.isoformat(),
             'systolic': self.systolic,
@@ -27,25 +26,22 @@ class BloodPressure(db.Model):
             'comment': self.comment
         }
 
-# Создаем таблицы при первом запросе
-@app.before_first_request
-def create_tables():
+# Создаем таблицы при запуске приложения
+with app.app_context():
     db.create_all()
 
 @app.route("/")
 def index():
-    """Главная страница с формой и графиками"""
     records = BloodPressure.query.order_by(BloodPressure.date.asc()).all()
     records_json = [record.to_dict() for record in records]
     return render_template(
         'index.html',
-        records=records[-10:],  # Последние 10 записей для таблицы
-        records_json=records_json  # Все записи для графиков
+        records=records[-10:],
+        records_json=records_json
     )
 
 @app.route("/add", methods=["POST"])
 def add_measurement():
-    """Обработка добавления нового измерения"""
     try:
         systolic = int(request.form["systolic"])
         diastolic = int(request.form["diastolic"])
@@ -78,11 +74,9 @@ def add_measurement():
 
 @app.route('/static/<path:path>')
 def serve_static(path):
-    """Обработка статических файлов"""
     return send_from_directory('static', path)
 
 def analyze_pressure(systolic, diastolic):
-    """Анализ показателей давления"""
     if systolic < 90 or diastolic < 60:
         return "Гипотензия (низкое давление)"
     elif systolic >= 140 or diastolic >= 90:
