@@ -4,28 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Журнал давления</title>
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>📊 Журнал давления</h1>
+    <h1>📊 Журнал артериального давления</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
                 <div class="alert {{ category }}">{{ message }}</div>
-            {% endfor %}  <!-- ← Вот он, пропущенный endfor! -->
+            {% endfor %}
         {% endif %}
     {% endwith %}
 
     <form method="POST">
         <div class="form-group">
-            <label>Верхнее:</label>
+            <label>Верхнее (систолическое):</label>
             <input type="number" name="systolic" required>
         </div>
         <div class="form-group">
-            <label>Нижнее:</label>
+            <label>Нижнее (диастолическое):</label>
             <input type="number" name="diastolic" required>
         </div>
         <div class="form-group">
@@ -39,19 +37,32 @@
         <button type="submit">💾 Сохранить</button>
     </form>
 
-    <h2>📅 История</h2>
+    <h2>📅 История измерений</h2>
     {% if records %}
         {% for record in records %}
             <div class="record">
                 <strong>{{ record.date.strftime('%Y-%m-%d %H:%M') }}</strong><br>
-                🔴 {{ record.systolic }} / {{ record.diastolic }} (💓 {{ record.pulse }})<br>
+                🔴 {{ record.systolic }} / {{ record.diastolic }} мм рт. ст.<br>
+                💓 Пульс: {{ record.pulse }} уд/мин<br>
                 {% if record.comment %}📝 {{ record.comment }}{% endif %}
             </div>
-        {% endfor %}  <!-- ← И здесь endfor -->
+        {% endfor %}
     {% else %}
         <p>Нет записей. Добавьте первое измерение!</p>
     {% endif %}
 
-    <script src="/static/js/pressure_chart.js"></script>
+    <div class="charts">
+        <div class="chart-container">
+            <h2>📈 Динамика давления</h2>
+            <canvas id="pressureChart" height="300"></canvas>
+        </div>
+        <div class="chart-container">
+            <h2>📊 Динамика пульса</h2>
+            <canvas id="pulseChart" height="300"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
 </body>
 </html>

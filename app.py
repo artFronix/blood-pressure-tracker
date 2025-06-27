@@ -28,7 +28,10 @@ class BloodPressure(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
 def index():
     if request.method == "POST":
         try:
