@@ -1,68 +1,85 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Журнал давления</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Монитор давления</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>📊 Журнал артериального давления</h1>
+  <div class="container">
+    <header class="header">
+      <div class="logo">HealthTrack</div>
+      <div class="date">{{ now.strftime('%d %B %Y') }}</div>
+    </header>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert {{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <form method="POST" action="{{ url_for('index') }}">
-        <div class="form-group">
-            <label>Верхнее (систолическое):</label>
-            <input type="number" name="systolic" required>
-        </div>
-        <div class="form-group">
-            <label>Нижнее (диастолическое):</label>
-            <input type="number" name="diastolic" required>
-        </div>
-        <div class="form-group">
-            <label>Пульс:</label>
-            <input type="number" name="pulse">
-        </div>
-        <div class="form-group">
-            <label>Комментарий:</label>
-            <textarea name="comment" rows="2"></textarea>
-        </div>
-        <button type="submit">💾 Сохранить</button>
-    </form>
-
-    <h2>📅 История измерений</h2>
-    {% if records %}
-        {% for record in records %}
-            <div class="record">
-                <strong>{{ record.date.strftime('%Y-%m-%d %H:%M') }}</strong><br>
-                🔴 {{ record.systolic }} / {{ record.diastolic }} мм рт. ст.<br>
-                💓 Пульс: {{ record.pulse }} уд/мин<br>
-                {% if record.comment %}📝 {{ record.comment }}{% endif %}
+    <main>
+      <div class="card">
+        <h2>Новое измерение</h2>
+        <form method="POST" action="{{ url_for('index') }}">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="record-label">Верхнее давление</label>
+              <input type="number" name="systolic" class="form-control" required>
             </div>
-        {% endfor %}
-    {% else %}
-        <p>Нет записей. Добавьте первое измерение!</p>
-    {% endif %}
+            <div class="form-group">
+              <label class="record-label">Нижнее давление</label>
+              <input type="number" name="diastolic" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="record-label">Пульс</label>
+              <input type="number" name="pulse" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="record-label">Комментарий</label>
+              <input type="text" name="comment" class="form-control">
+            </div>
+          </div>
+          <button type="submit" class="btn">Сохранить измерение</button>
+        </form>
+      </div>
 
-    <div class="charts">
+      <div class="card">
+        <h2>Последние измерения</h2>
+        <div class="records-list">
+          {% for record in records %}
+          <div class="record-card">
+            <div>
+              <div class="record-label">Дата</div>
+              <div>{{ record.date.strftime('%H:%M %d.%m') }}</div>
+            </div>
+            <div>
+              <div class="record-label">Давление</div>
+              <div class="record-value">{{ record.systolic }}/{{ record.diastolic }}</div>
+            </div>
+            <div>
+              <div class="record-label">Пульс</div>
+              <div class="record-value">{{ record.pulse }}</div>
+            </div>
+            <div>
+              {% if record.comment %}
+              <div class="record-label">Заметка</div>
+              <div>{{ record.comment }}</div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Динамика показателей</h2>
         <div class="chart-container">
-            <h2>📈 Динамика давления</h2>
-            <canvas id="pressureChart" height="300"></canvas>
+          <canvas id="pressureChart"></canvas>
         </div>
         <div class="chart-container">
-            <h2>📊 Динамика пульса</h2>
-            <canvas id="pulseChart" height="300"></canvas>
+          <canvas id="pulseChart"></canvas>
         </div>
-    </div>
+      </div>
+    </main>
+  </div>
 
-    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pressure_chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pressure_chart.js') }}"></script>
 </body>
 </html>
