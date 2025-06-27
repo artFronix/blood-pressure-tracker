@@ -17,7 +17,7 @@
         {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <form method="POST" action="{{ url_for('index') }}">
         <div class="form-group">
             <label>Верхнее (систолическое):</label>
             <input type="number" name="systolic" required>

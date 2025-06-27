@@ -26,12 +26,42 @@ class BloodPressure(db.Model):
             'comment': self.comment
         }
 
-# Создаем таблицы при запуске приложения
 with app.app_context():
     db.create_all()
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])  # Добавляем POST метод
 def index():
+    if request.method == "POST":
+        try:
+            systolic = int(request.form["systolic"])
+            diastolic = int(request.form["diastolic"])
+            pulse = int(request.form.get("pulse", 0))
+            comment = request.form.get("comment", "")
+
+            if systolic <= 0 or diastolic <= 0:
+                flash("❌ Давление должно быть положительным числом!", "error")
+                return redirect(url_for("index"))
+
+            new_record = BloodPressure(
+                systolic=systolic,
+                diastolic=diastolic,
+                pulse=pulse,
+                comment=comment
+            )
+            db.session.add(new_record)
+            db.session.commit()
+            
+            status = analyze_pressure(systolic, diastolic)
+            if status != "normal":
+                flash(f"⚠️ {status}", "warning")
+            else:
+                flash("✅ Измерение сохранено!", "success")
+
+        except ValueError:
+            flash("❌ Введите корректные числа!", "error")
+        
+        return redirect(url_for("index"))
+
     records = BloodPressure.query.order_by(BloodPressure.date.asc()).all()
     records_json = [record.to_dict() for record in records]
     return render_template(
@@ -39,38 +69,6 @@ def index():
         records=records[-10:],
         records_json=records_json
     )
-
-@app.route("/add", methods=["POST"])
-def add_measurement():
-    try:
-        systolic = int(request.form["systolic"])
-        diastolic = int(request.form["diastolic"])
-        pulse = int(request.form.get("pulse", 0))
-        comment = request.form.get("comment", "")
-
-        if systolic <= 0 or diastolic <= 0:
-            flash("❌ Давление должно быть положительным числом!", "error")
-            return redirect(url_for("index"))
-
-        new_record = BloodPressure(
-            systolic=systolic,
-            diastolic=diastolic,
-            pulse=pulse,
-            comment=comment
-        )
-        db.session.add(new_record)
-        db.session.commit()
-        
-        status = analyze_pressure(systolic, diastolic)
-        if status != "normal":
-            flash(f"⚠️ {status}", "warning")
-        else:
-            flash("✅ Измерение сохранено!", "success")
-
-    except ValueError:
-        flash("❌ Введите корректные числа!", "error")
-    
-    return redirect(url_for("index"))
 
 @app.route('/static/<path:path>')
 def serve_static(path):
