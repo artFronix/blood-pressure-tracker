@@ -17,27 +17,29 @@
 
     <main>
       <div class="card">
-        <h2>Новое измерение</h2>
+        <h2>Давление</h2>
         <form method="POST" action="{{ url_for('index') }}">
           <div class="form-grid">
-            <div class="form-group">
-              <label class="record-label">Верхнее давление</label>
-              <input type="number" name="systolic" class="form-control" required>
+                <div class="form-group">
+                    <label class="record-label">Верхнее</label>
+                    <input type="number" name="systolic" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="record-label">Нижнее</label>
+                    <input type="number" name="diastolic" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="record-label">Пульс</label>
+                    <input type="number" name="pulse" class="form-control">
+                </div>
             </div>
-            <div class="form-group">
-              <label class="record-label">Нижнее давление</label>
-              <input type="number" name="diastolic" class="form-control" required>
+            <div>
+                <div class="form-group">
+                    <label class="record-label">Комментарий</label>
+                    <input type="text" name="comment" class="form-control">
+                </div>
             </div>
-            <div class="form-group">
-              <label class="record-label">Пульс</label>
-              <input type="number" name="pulse" class="form-control">
-            </div>
-            <div class="form-group">
-              <label class="record-label">Комментарий</label>
-              <input type="text" name="comment" class="form-control">
-            </div>
-          </div>
-          <button type="submit" class="btn">Сохранить измерение</button>
+          <button type="submit" class="btn">Сохранить</button>
         </form>
       </div>
 
