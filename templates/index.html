@@ -58,7 +58,7 @@
               <div class="record-label">Пульс</div>
               <div class="record-value">{{ record.pulse }}</div>
             </div>
-            <div>
+            <div class="commentContainer">
               {% if record.comment %}
               <div class="record-label">Заметка</div>
               <div>{{ record.comment }}</div>
@@ -71,11 +71,13 @@
 
       <div class="card">
         <h2>Динамика показателей</h2>
-        <div class="chart-container">
-          <canvas id="pressureChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <canvas id="pulseChart"></canvas>
+        <div class="chartsWrapper">
+            <div class="chart-container">
+            <canvas id="pressureChart"></canvas>
+            </div>
+            <div class="chart-container">
+            <canvas id="pulseChart"></canvas>
+            </div>
         </div>
       </div>
     </main>

@@ -21,7 +21,7 @@
   .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem;
   }
   
   .header {
@@ -46,11 +46,14 @@
   }
   
   .form-grid {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    gap: 2.5rem;
     margin-bottom: 2rem;
-  }
+    }
+    .form-grid .commentContainer {
+        display: block;
+    }
   
   .form-group label {
     display: block;
@@ -114,7 +117,9 @@
     color: var(--text-light);
     margin-bottom: 0.25rem;
   }
-  
+  .chartsWrapper {
+    display: flex;
+  }
   .chart-container {
     height: 300px;
     margin-top: 2rem;
