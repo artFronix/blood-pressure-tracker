@@ -42,6 +42,7 @@ def index():
         if request.method == "POST":
             try:
                 # Обработка данных формы
+                now = datetime.now()
                 systolic = int(request.form["systolic"])
                 diastolic = int(request.form["diastolic"])
                 pulse = int(request.form.get("pulse", 0))
@@ -67,7 +68,7 @@ def index():
             except ValueError:
                 flash("❌ Введите корректные числа!", "error")
 
-        return render_template('index.html', records=records)
+        return render_template('index.html', records=records, now=now)
     
     except Exception as e:
         flash(f"⚠️ Произошла ошибка: {str(e)}", "error")
