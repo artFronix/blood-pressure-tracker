@@ -1,11 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Загружаем данные через AJAX
+    // Загрузка данных через API
     fetch('/get_records')
-        .then(response => response.json())
-        .then(records => {
-            drawCharts(records);
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
         })
-        .catch(error => console.error('Error:', error));
+        .then(records => {
+            if (records.length > 0) {
+                drawCharts(records);
+                setupResizeHandler();
+            } else {
+                console.log("Нет данных для отображения графиков");
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки данных:', error);
+            document.getElementById('pressureChart-container').innerHTML = 
+                '<p class="chart-error">Не удалось загрузить данные</p>';
+        });
 
     function drawCharts(records) {
         // Форматирование дат
@@ -14,43 +26,98 @@ document.addEventListener('DOMContentLoaded', function() {
             return date.toLocaleDateString('ru-RU', {
                 day: 'numeric',
                 month: 'short',
-                year: 'numeric'
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
             });
         });
 
+        // Общие настройки для всех графиков
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    bodyFont: {
+                        size: 14
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.3
+                },
+                point: {
+                    radius: 4,
+                    hoverRadius: 6
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            }
+        };
+
         // График давления
-        const pressureCtx = document.getElementById('pressureChart').getContext('2d');
-        new Chart(pressureCtx, {
+        const pressureCtx = document.getElementById('pressureChart');
+        window.pressureChart = new Chart(pressureCtx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Верхнее',
+                        label: 'Верхнее давление',
                         data: records.map(r => r.systolic),
                         borderColor: '#ff6384',
                         backgroundColor: 'rgba(255, 99, 132, 0.1)',
                         borderWidth: 2,
-                        tension: 0.3,
                         fill: true
                     },
                     {
-                        label: 'Нижнее',
+                        label: 'Нижнее давление',
                         data: records.map(r => r.diastolic),
                         borderColor: '#36a2eb',
                         backgroundColor: 'rgba(54, 162, 235, 0.1)',
                         borderWidth: 2,
-                        tension: 0.3,
                         fill: true
                     }
                 ]
             },
-            options: getChartOptions('мм рт. ст.')
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'мм рт. ст.'
+                        }
+                    }
+                }
+            }
         });
 
         // График пульса
-        const pulseCtx = document.getElementById('pulseChart').getContext('2d');
-        new Chart(pulseCtx, {
+        const pulseCtx = document.getElementById('pulseChart');
+        window.pulseChart = new Chart(pulseCtx, {
             type: 'line',
             data: {
                 labels: labels,
@@ -60,40 +127,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     borderColor: '#4bc0c0',
                     backgroundColor: 'rgba(75, 192, 192, 0.1)',
                     borderWidth: 2,
-                    tension: 0.3,
                     fill: true
                 }]
             },
-            options: getChartOptions('уд/мин')
-        });
-    }
-
-    function getChartOptions(unit) {
-        return {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
-                },
-                legend: {
-                    position: 'top',
-                }
-            },
-            scales: {
-                y: {
-                    title: {
-                        display: true,
-                        text: unit
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'уд/мин'
+                        }
                     }
                 }
             }
-        };
+        });
+    }
+
+    function setupResizeHandler() {
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (window.pressureChart) window.pressureChart.resize();
+                if (window.pulseChart) window.pulseChart.resize();
+            }, 200);
+        });
     }
 });

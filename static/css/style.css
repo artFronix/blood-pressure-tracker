@@ -74,10 +74,19 @@ button:hover {
 }
 
 .chart-container {
-    background: white;
+    position: relative;
+    height: 300px;  /* Фиксированная высота контейнера */
+    width: 100%;
+    margin-bottom: 30px;
+    border: 1px solid #eee;
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    background: white;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 @media (max-width: 768px) {
