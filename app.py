@@ -73,12 +73,12 @@ def index():
         return redirect(url_for("index"))
 
     # Для GET-запросов просто рендерим шаблон
-    return render_template('index.html')
+    return render_template('index.html', records=records)
 
 @app.route('/get_records')
 def get_records():
     """API endpoint для получения данных в формате JSON"""
-    records = BloodPressure.query.order_by(BloodPressure.date.asc()).all()
+    records = BloodPressure.query.order_by(BloodPressure.date.desc()).limit(10).all()
     records_json = [record.to_dict() for record in records]
     return jsonify(records_json)
 
